@@ -24,12 +24,12 @@ function initialize(canvas) {
 }
 
 function drawBoard() {
-	ctx.fillStyle = "#8CA699";
-	ctx.fillRect(0, 0, SIZE, SIZE);
-
 	ctx.lineWidth = 15;
-	
+	ctx.fillStyle = "#8CA699";
+	ctx.roundRect(0, 0, SIZE, SIZE, 20).fill();
+
 	drawSquares();
+
 
 	// Draw tic tac toe type internal lines
 	ctx.moveTo(SIZE / 3, 0);
@@ -45,16 +45,11 @@ function drawBoard() {
 	ctx.lineTo(SIZE, SIZE * 2 / 3);
 	ctx.stroke();
 
-	// Draw border
-	ctx.moveTo(0, 0);
-	ctx.lineTo(SIZE, 0);
-	ctx.stroke();
-	ctx.lineTo(SIZE, SIZE);
-	ctx.stroke();
-	ctx.lineTo(0, SIZE);
-	ctx.stroke();
-	ctx.lineTo(0, 0);
-	ctx.stroke();
+	for (var col = 0; col < 3; col++) {
+		for (var row = 0; row < 3; row++) {
+			ctx.roundRect(col * SIZE / 3, row * SIZE / 3, SIZE / 3, SIZE / 3, 30).stroke();
+		}
+	}
 }
 
 function generateSquare() {
@@ -89,7 +84,7 @@ function drawSquare(squareX, squareY, value) {
 
 //Check if two numbers are adjacent in series
 function fibCheck(first, second) {
-	while (FIB[first] + FIB[second] > Math.max.apply(null, FIB)) {
+	while (SQUARES[first] + SQUARES[second] > Math.max.apply(null, FIB)) {
 		calculateFib();
 	}
 	return (SQUARES[first] != 0 && SQUARES[second] != 0 && 
@@ -192,7 +187,24 @@ function calculateFib() {
 	console.log(FIB);
 }
 
+/*
+	Adapted from Grumdrig on http://stackoverflow.com/questions/1255512/how-to-draw-a-rounded-rectangle-on-html-canvas
+*/
+CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+	if (w < 2 * r) r = w / 2;
+	if (h < 2 * r) r = h / 2;
+	this.beginPath();
+	this.moveTo(x+r, y);
+	this.arcTo(x+w, y,   x+w, y+h, r);
+	this.arcTo(x+w, y+h, x,   y+h, r);
+	this.arcTo(x,   y+h, x,   y,   r);
+	this.arcTo(x,   y,   x+w, y,   r);
+	this.closePath();
+	return this;
+}
+
 document.addEventListener('keydown', function(event) {
+	var prevBoard = SQUARES.slice(0);
     switch(event.keyCode) {
 		// left key pressed
 		case 37:
@@ -270,8 +282,17 @@ document.addEventListener('keydown', function(event) {
 	//Make sure it's an arrow key
 	if (event.keyCode > 36 && event.keyCode < 41) {
 		collide(event.keyCode);
-		generateSquare();
-		drawBoard();
-		checkLose();
+		
+		var isSame = true;
+		for (var i = 0; i < SQUARES.length && isSame; i++) {
+			if (SQUARES[i] != prevBoard[i]) {
+				isSame = false;
+			}
+		}
+		if (!isSame) {
+			generateSquare();
+			drawBoard();
+			checkLose();
+		}
 	}
 }, false);
