@@ -76,14 +76,15 @@ function drawBoard() {
 			ctx.roundRect(col * SIZE / 3, moveDown + row * SIZE / 3,  SIZE / 3,SIZE / 3, 30).stroke();
 		}
 	}
-	ctx.fillStyle = "#FFFFFF";
+	ctx.fillStyle = "#FFCC99";
 	ctx.fillRect(30,20,150,150); 
 	ctx.fillRect(230,20,150,150); 
 	drawScore(ctx);
 }
 
 function drawScore(ctx){
-	ctx.font = '16pt Calibri';
+	ctx.font = '20pt Calibri';
+	ctx.fontcolor = "#3399FF";
 	wrapText(ctx, score, 80, 70, 100, 15);
 	wrapText(ctx, best, 270, 70, 100, 15);
 	drawMyScore();
