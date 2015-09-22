@@ -4,16 +4,21 @@
 <title>Move</title>
 <meta name="author" content="Max Eshleman">
 <script src="fib2048.js"></script>
+<link rel="stylesheet" type="text/css" href="move.css">
 </head>
-<body>
 
-<canvas id="canvas" width="600" height="600" style="border: 5px solid black; border-radius: 20px; background-color: black">
-</canvas>
-<br>
+ <body>
+	<h1>2048:FIBONACCI<h1>
 
-<script>
-initialize(document.getElementById("canvas"));
-</script>
+	<canvas id="canvas" width="600" height="800" style="border: 5px solid black; border-radius: 20px; background-color: black">
+	</canvas>
+	<br>
+	
+	<button id="newGame" "type="button" onclick="resetGame()" >New Game</button>
 
-</body>
+	<script>
+	initialize(document.getElementById("canvas"));
+	</script>
+
+ </body>
 </html>

@@ -9,7 +9,12 @@ var SQUARES;
 var c;
 var ctx;
 var SIZE = 600;
+var moveDown = SIZE/3;
 var FIB = [1, 2];
+var score = 'Score'
+var best = 'Best'
+var myScore = 0
+var bestScore = 0
 
 function initialize(canvas) {
 	c = canvas;
@@ -19,38 +24,76 @@ function initialize(canvas) {
 	//Create array of zeros
 	SQUARES = Array.apply(null, Array(9)).map(Number.prototype.valueOf,0);
 	generateSquare();
-
 	drawBoard();
 }
 
+function wrapText(context, text, x, y, maxWidth, lineHeight) {
+        var words = text.split(' ');
+        var line = '';
+		context.fillStyle = "#8CA699";
+        for(var n = 0; n < words.length; n++) {
+          var testLine = line + words[n] + ' ';
+          var metrics = context.measureText(testLine);
+          var testWidth = metrics.width;
+          if (testWidth > maxWidth && n > 0) {
+            context.fillText(line, x, y);
+            line = words[n] + ' ';
+            y += lineHeight;
+          }
+          else {
+            line = testLine;
+          }
+        }
+        context.fillText(line, x, y);
+}
+	  
 function drawBoard() {
 	ctx.lineWidth = 15;
 	ctx.fillStyle = "#8CA699";
-	ctx.roundRect(0, 0, SIZE, SIZE, 20).fill();
-
+	ctx.roundRect(0, 0, SIZE, moveDown +SIZE, 20).fill();
+	
 	drawSquares();
-
-
 	// Draw tic tac toe type internal lines
-	ctx.moveTo(SIZE / 3, 0);
-	ctx.lineTo(SIZE / 3, SIZE);
+	ctx.moveTo(0,moveDown);
+	ctx.lineTo(SIZE,moveDown );
 	ctx.stroke();
-	ctx.moveTo(SIZE * 2 / 3, 0);
-	ctx.lineTo(SIZE * 2 / 3, SIZE);
+	ctx.moveTo(SIZE / 3, moveDown +0);
+	ctx.lineTo(SIZE / 3, moveDown +SIZE);
 	ctx.stroke();
-	ctx.moveTo(0, SIZE / 3);
-	ctx.lineTo(SIZE, SIZE / 3);
+	ctx.moveTo(SIZE * 2 / 3, moveDown +0);
+	ctx.lineTo(SIZE * 2 / 3, moveDown +SIZE);
 	ctx.stroke();
-	ctx.moveTo(0, SIZE * 2 / 3);
-	ctx.lineTo(SIZE, SIZE * 2 / 3);
+	ctx.moveTo(0, moveDown +SIZE / 3);
+	ctx.lineTo(SIZE,moveDown +SIZE / 3);
+	ctx.stroke();
+	ctx.moveTo(0, moveDown +SIZE * 2 / 3);
+	ctx.lineTo(SIZE, moveDown + SIZE * 2 / 3);
 	ctx.stroke();
 
+		
 	for (var col = 0; col < 3; col++) {
 		for (var row = 0; row < 3; row++) {
-			ctx.roundRect(col * SIZE / 3, row * SIZE / 3, SIZE / 3, SIZE / 3, 30).stroke();
+			ctx.roundRect(col * SIZE / 3, moveDown + row * SIZE / 3,  SIZE / 3,SIZE / 3, 30).stroke();
 		}
 	}
+	ctx.fillStyle = "#FFFFFF";
+	ctx.fillRect(30,20,150,150); 
+	ctx.fillRect(230,20,150,150); 
+	drawScore(ctx);
 }
+
+function drawScore(ctx){
+	ctx.font = '16pt Calibri';
+	wrapText(ctx, score, 80, 70, 100, 15);
+	wrapText(ctx, best, 270, 70, 100, 15);
+	drawMyScore();
+	drawBestScore();
+	//wrapText(ctx, myScore, 100, 120, 100, 15);
+	//wrapText(ctx, myBest, 300, 120, 100, 15);
+	ctx.font = '100px solid';
+	ctx.stroke;
+}
+
 
 function generateSquare() {
 	// Check if there is an empty square
@@ -67,9 +110,41 @@ function generateSquare() {
 function drawSquares() {
 	for (var i = 0; i < SQUARES.length; i++) {
 		if (SQUARES[i] > 0) {
-			drawSquare((i % 3) * SIZE / 3, (Math.floor(i / 3)) * SIZE / 3, SQUARES[i]);
+			drawSquare((i % 3) * SIZE / 3,  moveDown + (Math.floor(i / 3)) * SIZE / 3, SQUARES[i]);
 		}
 	}
+}
+
+function drawMyScore(){
+	myScore = 0;
+	for (var i = 0; i < SQUARES.length; i++) {
+		if (SQUARES[i] > myScore) {
+			myScore = SQUARES[i];
+		}
+	}
+	console.log('myScore');
+	ctx.font = '16pt Calibri';
+	ctx.fillText(myScore, 100 , 120);
+	ctx.font = '100px solid';
+	ctx.stroke;
+}
+
+function drawBestScore(){
+	for (var i = 0; i < SQUARES.length; i++) {
+		if (SQUARES[i] > bestScore) {
+			bestScore = SQUARES[i];
+		}
+	}
+	ctx.font = '16pt Calibri';
+	ctx.fillText(bestScore, 300, 120);
+	ctx.font = '100px solid';
+	ctx.stroke;
+}
+
+function resetGame(){
+	initialize(document.getElementById("canvas"));
+	myScore = 0;
+	drawMyScore();
 }
 
 function drawSquare(squareX, squareY, value) {
@@ -180,6 +255,7 @@ function checkLose() {
 			
 		}
 	}
+
 }
 
 function calculateFib() {
@@ -293,6 +369,6 @@ document.addEventListener('keydown', function(event) {
 			generateSquare();
 			drawBoard();
 			checkLose();
-		}
+		} 
 	}
 }, false);
