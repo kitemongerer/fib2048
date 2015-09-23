@@ -471,11 +471,20 @@ function moveCollide(direction) {
 function checkLose() {
 	//Check for no empty squares
 	if (SQUARES.indexOf(0) < 0) {
+		var canCombine = false;
+		//Check every other piece
+		for (var i = 1; i < SQUARES.length && !canCombine; i += 2) {
+			if ((i - NUM_SQUARES > 0 && fibCheck(i, i - NUM_SQUARES)) ||
+				(i + NUM_SQUARES < SQUARES.length && fibCheck(i, i + NUM_SQUARES)) ||
+				(i - 1 > 0 && fibCheck(i, i - 1)) ||
+				(i + 1 < SQUARES.length && fibCheck(i, i + 1))) {
+				
+				canCombine = true;
+			} 
+		}
 
-		//Check center pieces
-		if (SQUARES)
-		for (var i = 1; i < SQUARES.length; i += 2) {
-			
+		if (!canCombine) {
+			window.alert("YOU LOSE!");
 		}
 	}
 
@@ -520,8 +529,7 @@ document.addEventListener('keydown', function(event) {
 		if (!isSame) {
 			drawBoard();
 			generateSquare();
-			
-			//checkLose();
+			checkLose();
 		} 
 	}
 }, false);
