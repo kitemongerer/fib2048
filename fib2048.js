@@ -105,6 +105,11 @@ function drawSquare(squareX, squareY, value) {
 	ctx.fillStyle = "#4DB870";
 	ctx.textAlign="center";
 	ctx.textBaseline = 'middle';
+
+	var iterCount = 1;
+	while (ctx.measureText(value).width > SQUARE_SIZE - 20) {
+		ctx.font = "" + (80 - 10 * iterCount++) + "px Arial";
+	}
 	ctx.fillText(value, squareX + SQUARE_SIZE / 2 , squareY + SQUARE_SIZE / 2);
 }
 
