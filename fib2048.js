@@ -31,8 +31,8 @@ function initialize(canvas) {
 
 	//Create array of zeros
 	SQUARES = Array.apply(null, Array(NUM_SQUARES * NUM_SQUARES)).map(Number.prototype.valueOf,0);
-	generateSquare();
 	drawBoard();
+	generateSquare();
 }
 
 function wrapText(context, text, x, y, maxWidth, lineHeight) {
@@ -101,7 +101,7 @@ function drawBoardTemplate() {
 	wrapText(ctx, score, 80, 70, 100, 15);
 	wrapText(ctx, best, 270, 70, 100, 15);
 	drawMyScore();
-	drawBestScore();
+	drawBestScore(); 
 	//wrapText(ctx, myScore, 100, 120, 100, 15);
 	//wrapText(ctx, myBest, 300, 120, 100, 15);
 	ctx.font = '100px solid';
@@ -117,8 +117,8 @@ function generateSquare() {
 		while (SQUARES[index] != 0) {
 			var index = Math.floor((Math.random() * (NUM_SQUARES * NUM_SQUARES + 1)));
 		}
-		SQUARES[index] = 1;
 		animateSquareGen((index % NUM_SQUARES) * SQUARE_SIZE, (Math.floor(index / NUM_SQUARES)) * SQUARE_SIZE,(new Date()).getTime());
+		SQUARES[index] = 1;
 	}
 }
 
@@ -135,7 +135,7 @@ function drawSquare(squareX, squareY, value) {
 	ctx.fillRect(squareX, squareY, SQUARE_SIZE, SQUARE_SIZE);
 
 	ctx.font = "80px Arial";
-	ctx.fillStyle = "red";
+	ctx.fillStyle = "#4DB870";
 	ctx.textAlign="center";
 	ctx.textBaseline = 'middle';
 	ctx.fillText(value, squareX + SQUARE_SIZE / 2 , squareY + SQUARE_SIZE / 2);
@@ -146,7 +146,7 @@ function animSquare(squareX, squareY, value, size) {
 	ctx.fillRect(squareX, squareY, size, size);
 
 	ctx.font = "" + (80 * size / SQUARE_SIZE) + "px Arial";
-	ctx.fillStyle = "red";
+	ctx.fillStyle = "#4DB870";
 	ctx.textAlign="center";
 	ctx.textBaseline = 'middle';
 	ctx.fillText(value, squareX + size / 2 , squareY + size / 2);
@@ -156,7 +156,7 @@ function animateSquareGen(squareX, squareY, startTime) {
 	// update
 	var time = (new Date()).getTime() - startTime;
 
-	var growSpeed = 1000;
+	var growSpeed = 500;
 
 	var newSize = growSpeed * time / 1000;
 
@@ -453,8 +453,8 @@ document.addEventListener('keydown', function(event) {
 			}
 		}
 		if (!isSame) {
-			generateSquare();
 			drawBoard();
+			generateSquare();
 			
 			//checkLose();
 		} 
