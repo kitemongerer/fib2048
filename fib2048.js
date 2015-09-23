@@ -1,4 +1,3 @@
-// TODO can't move direction if no tiles can move
 // TODO lose function
 // TODO win function
 
@@ -8,21 +7,30 @@
 var SQUARES;
 var c;
 var ctx;
-var SIZE = 600;
-var moveDown = SIZE/3;
+var SIZE = 500;
+var NUM_SQUARES = 4;
+var SQUARE_SIZE = SIZE / NUM_SQUARES;
 var FIB = [1, 2];
 var score = 'Score'
 var best = 'Best'
 var myScore = 0
 var bestScore = 0
 
+//From html5 canvas tutorials
+window.requestAnimFrame = (function(callback) {
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+    function(callback) {
+    	
+    };
+})();
+
 function initialize(canvas) {
 	c = canvas;
 	ctx = c.getContext("2d");
-	ctx.font = "100px Arial";
+	ctx.font = "80px Arial";
 
 	//Create array of zeros
-	SQUARES = Array.apply(null, Array(9)).map(Number.prototype.valueOf,0);
+	SQUARES = Array.apply(null, Array(NUM_SQUARES * NUM_SQUARES)).map(Number.prototype.valueOf,0);
 	generateSquare();
 	drawBoard();
 }
@@ -50,39 +58,44 @@ function wrapText(context, text, x, y, maxWidth, lineHeight) {
 function drawBoard() {
 	ctx.lineWidth = 15;
 	ctx.fillStyle = "#8CA699";
-	ctx.roundRect(0, 0, SIZE, moveDown +SIZE, 20).fill();
+	ctx.roundRect(0, 0, SIZE, SIZE, 20).fill();
 	
 	drawSquares();
+	drawBoardTemplate();
+	
+	//ctx.fillStyle = "#FFCC99";
+	//ctx.fillRect(30,20,150,150); 
+	//ctx.fillRect(230,20,150,150); 
+	//drawScore(ctx);
+}
+
+function drawBoardTemplate() {
 	// Draw tic tac toe type internal lines
-	ctx.moveTo(0,moveDown);
-	ctx.lineTo(SIZE,moveDown );
+	ctx.moveTo(SQUARE_SIZE, 0);
+	ctx.lineTo(SQUARE_SIZE, SIZE);
 	ctx.stroke();
-	ctx.moveTo(SIZE / 3, moveDown +0);
-	ctx.lineTo(SIZE / 3, moveDown +SIZE);
+	ctx.moveTo(2 * SQUARE_SIZE, 0);
+	ctx.lineTo(2 * SQUARE_SIZE, SIZE);
 	ctx.stroke();
-	ctx.moveTo(SIZE * 2 / 3, moveDown +0);
-	ctx.lineTo(SIZE * 2 / 3, moveDown +SIZE);
+	ctx.moveTo(0, SQUARE_SIZE);
+	ctx.lineTo(SIZE, SQUARE_SIZE);
 	ctx.stroke();
-	ctx.moveTo(0, moveDown +SIZE / 3);
-	ctx.lineTo(SIZE,moveDown +SIZE / 3);
+	ctx.moveTo(0, 2 * SQUARE_SIZE);
+	ctx.lineTo(SIZE, 2 * SQUARE_SIZE);
 	ctx.stroke();
-	ctx.moveTo(0, moveDown +SIZE * 2 / 3);
-	ctx.lineTo(SIZE, moveDown + SIZE * 2 / 3);
+	ctx.moveTo(0, 3 * SQUARE_SIZE);
+	ctx.lineTo(SIZE, 3 * SQUARE_SIZE);
 	ctx.stroke();
 
 		
-	for (var col = 0; col < 3; col++) {
-		for (var row = 0; row < 3; row++) {
-			ctx.roundRect(col * SIZE / 3, moveDown + row * SIZE / 3,  SIZE / 3,SIZE / 3, 30).stroke();
+	for (var col = 0; col < 4; col++) {
+		for (var row = 0; row < 4; row++) {
+			ctx.roundRect(col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE, 30).stroke();
 		}
 	}
-	ctx.fillStyle = "#FFCC99";
-	ctx.fillRect(30,20,150,150); 
-	ctx.fillRect(230,20,150,150); 
-	drawScore(ctx);
 }
 
-function drawScore(ctx){
+/*function drawScore(ctx){
 	ctx.font = '20pt Calibri';
 	ctx.fontcolor = "#3399FF";
 	wrapText(ctx, score, 80, 70, 100, 15);
@@ -93,30 +106,79 @@ function drawScore(ctx){
 	//wrapText(ctx, myBest, 300, 120, 100, 15);
 	ctx.font = '100px solid';
 	ctx.stroke;
-}
+}*/
 
 
 function generateSquare() {
 	// Check if there is an empty square
 	if (SQUARES.indexOf(0) > -1) {
 		//Generate number between 1 and 9
-		var index = Math.floor((Math.random() * 10));
+		var index = Math.floor((Math.random() * (NUM_SQUARES * NUM_SQUARES + 1)));
 		while (SQUARES[index] != 0) {
-			var index = Math.floor((Math.random() * 10));
+			var index = Math.floor((Math.random() * (NUM_SQUARES * NUM_SQUARES + 1)));
 		}
 		SQUARES[index] = 1;
+		animateSquareGen((index % NUM_SQUARES) * SQUARE_SIZE, (Math.floor(index / NUM_SQUARES)) * SQUARE_SIZE,(new Date()).getTime());
 	}
 }
 
 function drawSquares() {
 	for (var i = 0; i < SQUARES.length; i++) {
 		if (SQUARES[i] > 0) {
-			drawSquare((i % 3) * SIZE / 3,  moveDown + (Math.floor(i / 3)) * SIZE / 3, SQUARES[i]);
+			drawSquare((i % NUM_SQUARES) * SQUARE_SIZE, (Math.floor(i / NUM_SQUARES)) * SQUARE_SIZE, SQUARES[i]);
 		}
 	}
 }
 
-function drawMyScore(){
+function drawSquare(squareX, squareY, value) {
+	ctx.fillStyle = "#3399FF";
+	ctx.fillRect(squareX, squareY, SQUARE_SIZE, SQUARE_SIZE);
+
+	ctx.font = "80px Arial";
+	ctx.fillStyle = "red";
+	ctx.textAlign="center";
+	ctx.textBaseline = 'middle';
+	ctx.fillText(value, squareX + SQUARE_SIZE / 2 , squareY + SQUARE_SIZE / 2);
+}
+
+function animSquare(squareX, squareY, value, size) {
+	ctx.fillStyle = "#3399FF";
+	ctx.fillRect(squareX, squareY, size, size);
+
+	ctx.font = "" + (80 * size / SQUARE_SIZE) + "px Arial";
+	ctx.fillStyle = "red";
+	ctx.textAlign="center";
+	ctx.textBaseline = 'middle';
+	ctx.fillText(value, squareX + size / 2 , squareY + size / 2);
+}
+
+function animateSquareGen(squareX, squareY, startTime) {
+	// update
+	var time = (new Date()).getTime() - startTime;
+
+	var growSpeed = 1000;
+
+	var newSize = growSpeed * time / 1000;
+
+	if(newSize < SQUARE_SIZE) {
+		if(newSize > SQUARE_SIZE) {
+			newSize = SQUARE_SIZE;
+		}
+
+		// clear
+		ctx.clearRect(squareX + (SQUARE_SIZE - newSize) / 2, squareY + (SQUARE_SIZE - newSize) / 2, newSize, newSize);
+		animSquare(squareX + (SQUARE_SIZE - newSize) / 2, squareY + (SQUARE_SIZE - newSize) / 2, 1, newSize);
+		drawBoardTemplate();
+		// request new frame
+		requestAnimFrame(function() {
+			animateSquareGen(squareX, squareY, startTime);
+		});	
+	} else {
+
+	}
+}
+
+/*function drawMyScore(){
 	myScore = 0;
 	for (var i = 0; i < SQUARES.length; i++) {
 		if (SQUARES[i] > myScore) {
@@ -140,23 +202,15 @@ function drawBestScore(){
 	ctx.fillText(bestScore, 300, 120);
 	ctx.font = '100px solid';
 	ctx.stroke;
-}
+}*/
 
 function resetGame(){
 	initialize(document.getElementById("canvas"));
 	myScore = 0;
-	drawMyScore();
+	//drawMyScore();
 }
 
-function drawSquare(squareX, squareY, value) {
-	ctx.fillStyle = "#3399FF";
-	ctx.fillRect(squareX, squareY, SIZE / 3, SIZE / 3);
 
-	ctx.fillStyle = "red";
-	ctx.textAlign="center";
-	ctx.textBaseline = 'middle';
-	ctx.fillText(value, squareX + SIZE / 6 , squareY + SIZE / 6);
-}
 
 //Check if two numbers are adjacent in series
 function fibCheck(first, second) {
@@ -175,41 +229,48 @@ function collide(direction) {
 		// left key pressed
 		case 37:
 			// Go through each row
-			for (var receiving = 0; receiving < SQUARES.length; receiving += 3) {
-				if (fibCheck(receiving, receiving + 1) && SQUARES[receiving] != 0) {
-					SQUARES[receiving] += SQUARES[receiving + 1];
-					SQUARES[receiving + 1] = SQUARES[receiving + 2];
-					SQUARES[receiving + 2] = 0;
-					collided = true;
-				} else if (fibCheck(receiving + 1, receiving + 2) && SQUARES[receiving + 1] != 0) {
-					SQUARES[receiving + 1] += SQUARES[receiving + 2];
-					SQUARES[receiving + 2] = 0;
-					collided = true;
+			for (var row = 0; row < SQUARES.length; row += NUM_SQUARES) {
+				for (var receiving = row; receiving < row + NUM_SQUARES - 1; receiving++) {
+					while (fibCheck(receiving, receiving + 1) && SQUARES[receiving] != 0) {
+						SQUARES[receiving] += SQUARES[receiving + 1];
+						SQUARES[receiving + 1] = 0;
+
+						for (var move = receiving + 1; move < NUM_SQUARES - 1; move++) {
+							SQUARES[move] = SQUARES[move + 1];
+						}
+
+						SQUARES[row + NUM_SQUARES - 1] = 0;
+						collided = true;
+					}
 				}
 			}
 		break;
 
 		// up key pressed
 		case 38:
-			// Go through each columns
-			for (var receiving = 0; receiving < 3; receiving ++) {
-				if (fibCheck(receiving, receiving + 3) && SQUARES[receiving] != 0) {
-					SQUARES[receiving] += SQUARES[receiving + 3];
-					SQUARES[receiving + 3] = SQUARES[receiving + 6];
-					SQUARES[receiving + 6] = 0;
-					collided = true;
-				} else if (fibCheck(receiving + 3, receiving + 6) && SQUARES[receiving + 3] != 0) {
-					SQUARES[receiving + 3] += SQUARES[receiving + 6];
-					SQUARES[receiving + 6] = 0;
-					collided = true;
+			// Go through each row
+			/*for (var row = 0; row < SQUARES.length; row += NUM_SQUARES) {
+				for (var receiving = row; receiving < row + NUM_SQUARES; receiving++) {
+					while (fibCheck(receiving, receiving + NUM_SQUARES) && SQUARES[receiving] != 0) {
+						SQUARES[receiving] += SQUARES[receiving + NUM_SQUARES];
+						SQUARES[receiving + NUM_SQUARES] = 0;
+
+						var move, i;
+						for (move = receiving + NUM_SQUARES, i = 0; i < NUM_SQUARES - 1; move += NUM_SQUARES, i++) {
+							SQUARES[move] = SQUARES[move + NUM_SQUARES];
+						}
+
+						SQUARES[row + NUM_SQUARES * (NUM_SQUARES - 1)] = 0;
+						collided = true;
+					}
 				}
-			}
+			}*/
 		break;
 		
 		// right key pressed
 		case 39:
 			// Go through each row
-			for (var receiving = 0; receiving < SQUARES.length; receiving += 3) {
+			/*for (var receiving = 0; receiving < SQUARES.length; receiving += NUM_SQUARES) {
 				if (fibCheck(receiving + 1, receiving + 2) && SQUARES[receiving + 2] != 0) {
 					SQUARES[receiving + 2] += SQUARES[receiving + 1];
 					SQUARES[receiving + 1] = SQUARES[receiving];
@@ -220,13 +281,13 @@ function collide(direction) {
 					SQUARES[receiving] = 0;
 					collided = true;
 				}
-			}
+			}*/
 		break;
 
 		// down key pressed
 		case 40:
 			// Go through each columns
-			for (var receiving = 0; receiving < 3; receiving ++) {
+			/*for (var receiving = 0; receiving < NUM_SQUARES; receiving ++) {
 				if (fibCheck(receiving + 6, receiving + 3) && SQUARES[receiving + 6] != 0) {
 					SQUARES[receiving + 6] += SQUARES[receiving + 3];
 					SQUARES[receiving + 3] = SQUARES[receiving];
@@ -237,7 +298,7 @@ function collide(direction) {
 					SQUARES[receiving] = 0;
 					collided = true;
 				}
-			}
+			}*/
 		break;
 	}	
 
@@ -286,35 +347,48 @@ document.addEventListener('keydown', function(event) {
 		// left key pressed
 		case 37:
 			// Go through each row
-			for (var i = 0; i < SQUARES.length; i += 3) {
-				if (SQUARES[i + 1] == 0 && SQUARES[i] == 0) {
-						SQUARES[i] = SQUARES[i + 2];
-						SQUARES[i + 2] = 0;
-				} else if (SQUARES[i] == 0) {
-					SQUARES[i] = SQUARES[i + 1];
-					SQUARES[i + 1] = SQUARES[i + 2];
-					SQUARES[i + 2] = 0;
-				} else if (SQUARES[i + 1] == 0) {
-					SQUARES[i + 1] = SQUARES[i + 2];
-					SQUARES[i + 2] = 0;
+			for (var i = 0; i < SQUARES.length; i += NUM_SQUARES) {
+				for (var offset = 0; offset < NUM_SQUARES - 1; offset++) {
+
+					//Need count incase all values in column are zero
+					var count = 0;
+
+					//Count decreases relative to offset because each column you move over
+					//The rightmost square needs to move one less
+					while (SQUARES[i + offset] == 0 && count < NUM_SQUARES - offset - 1) {
+						for (var move = i + offset; move < i + NUM_SQUARES - 1; move++) {
+							SQUARES[move] = SQUARES[move + 1];
+						}
+
+						//Set last square to 0
+						SQUARES[i + NUM_SQUARES - 1] = 0;
+						count++;
+					}
 				}
 			}
+
 		break;
 
 		// up key pressed
 		case 38:
-			// Go through each column
-			for (var i = 0; i < 3; i++) {
-				if (SQUARES[i + 3] == 0 && SQUARES[i] == 0) {
-						SQUARES[i] = SQUARES[i + 6];
-						SQUARES[i + 6] = 0;
-				} else if (SQUARES[i] == 0) {
-					SQUARES[i] = SQUARES[i + 3];
-					SQUARES[i + 3] = SQUARES[i + 6];
-					SQUARES[i + 6] = 0;
-				} else if (SQUARES[i + 3] == 0) {
-					SQUARES[i + 3] = SQUARES[i + 6];
-					SQUARES[i + 6] = 0;
+			// Go through each row
+			for (var i = 0; i < SQUARES.length; i += NUM_SQUARES) {
+				for (var offset = 0; offset < NUM_SQUARES; offset++) {
+					
+					//Need count incase all values in column are zero
+					var count = 0;
+					while (SQUARES[i + offset] == 0 && count < NUM_SQUARES - (i / NUM_SQUARES) - 1) {
+
+						// move < NUM_SQUARES * (NUM_SQUARES - 1) prevents move from being in the last row
+						for (var move = offset + i; move < NUM_SQUARES * (NUM_SQUARES - 1); move += NUM_SQUARES) {
+							// Set square above to square below
+							SQUARES[move] = SQUARES[move + NUM_SQUARES];
+						}
+
+						//Sets last square in column to 0
+						SQUARES[(NUM_SQUARES) * (NUM_SQUARES - 1) + offset] = 0;
+						count++;
+					}
 				}
 			}
 		break;
@@ -322,35 +396,47 @@ document.addEventListener('keydown', function(event) {
 		// right key pressed
 		case 39:
 			// Go through each row
-			for (var i = 0; i < SQUARES.length; i += 3) {
-				if (SQUARES[i + 1] == 0 && SQUARES[i + 2] == 0) {
-						SQUARES[i + 2] = SQUARES[i];
+			for (var i = 0; i < SQUARES.length; i += NUM_SQUARES) {
+				for (var offset = NUM_SQUARES - 1; offset >= 0; offset--) {
+
+					//Need count incase all values in column are zero
+					var count = 0;
+
+					//Count decreases relative to offset because each column you move over
+					//The rightmost square needs to move one less
+					while (SQUARES[i + offset] == 0 && count < offset) {
+						for (var move = i + offset; move > i - 1; move--) {
+							SQUARES[move] = SQUARES[move - 1];
+						}
+
+						//Set last square to 0
 						SQUARES[i] = 0;
-				} else if (SQUARES[i + 2] == 0) {
-					SQUARES[i + 2] = SQUARES[i + 1];
-					SQUARES[i + 1] = SQUARES[i];
-					SQUARES[i] = 0;
-				} else if (SQUARES[i + 1] == 0) {
-					SQUARES[i + 1] = SQUARES[i];
-					SQUARES[i] = 0;
+						count++;
+					}
 				}
-			} 
+			}
 		break;
 
 		// down key pressed
 		case 40:
-			// Go through each column
-			for (var i = 0; i < 3; i++) {
-				if (SQUARES[i + 3] == 0 && SQUARES[i + 6] == 0) {
-						SQUARES[i + 6] = SQUARES[i];
-						SQUARES[i] = 0;
-				} else if (SQUARES[i + 6] == 0) {
-					SQUARES[i + 6] = SQUARES[i + 3];
-					SQUARES[i + 3] = SQUARES[i];
-					SQUARES[i] = 0;
-				} else if (SQUARES[i + 3] == 0) {
-					SQUARES[i + 3] = SQUARES[i];
-					SQUARES[i] = 0;
+			// Go through each row
+			for (var i = 0; i < SQUARES.length; i += NUM_SQUARES) {
+				for (var offset = 0; offset < NUM_SQUARES; offset++) {
+					
+					//Need count incase all values in column are zero
+					var count = 0;
+					while (SQUARES[SQUARES.length - NUM_SQUARES + offset] == 0 && count < NUM_SQUARES - (i / NUM_SQUARES) - 1) {
+
+						// move < NUM_SQUARES * (NUM_SQUARES - 1) prevents move from being in the last row
+						for (var move = SQUARES.length - NUM_SQUARES + offset - i; move >= 0; move -= NUM_SQUARES) {
+							// Set square above to square below
+							SQUARES[move] = SQUARES[move - NUM_SQUARES];
+						}
+
+						//Sets last square in column to 0
+						SQUARES[offset] = 0;
+						count++;
+					}
 				}
 			}
 		break;
@@ -369,7 +455,8 @@ document.addEventListener('keydown', function(event) {
 		if (!isSame) {
 			generateSquare();
 			drawBoard();
-			checkLose();
+			
+			//checkLose();
 		} 
 	}
 }, false);

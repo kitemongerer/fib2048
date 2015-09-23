@@ -14,13 +14,16 @@ body{
 
 #canvas
 {
- 
+	margin-top: 100px;
+	border: 5px solid black; 
+	border-radius: 20px; 
+	background-color: black
 }
 
 #newGame{
-	position: relative;
-    left: 200px;
-    top: -700px;
+	position: absolute;
+    left: 500px;
+    top: 100px;
 	background-color:lightgreen;
 	width:100px;
 	height:50px;
