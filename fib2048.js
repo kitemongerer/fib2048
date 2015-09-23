@@ -307,6 +307,167 @@ function collide(direction) {
 	}
 }
 
+function moveCollide(direction) {
+	switch(direction) {
+		// left key pressed
+		case 37:
+			// Go through each row
+			for (var i = 0; i < SQUARES.length; i += NUM_SQUARES) {
+				for (var offset = 0; offset < NUM_SQUARES - 1; offset++) {
+
+					//Need count incase all values in column are zero
+					var count = 0;
+
+					//Count decreases relative to offset because each column you move over
+					//The rightmost square needs to move one less
+					while (SQUARES[i + offset] == 0 && count < NUM_SQUARES - offset - 1) {
+						for (var move = i + offset; move < i + NUM_SQUARES - 1; move++) {
+							SQUARES[move] = SQUARES[move + 1];
+						}
+
+						//Set last square to 0
+						SQUARES[i + NUM_SQUARES - 1] = 0;
+						count++;
+					}
+				}
+
+				//Check for squares that can combine
+				//Start at left then move right
+				for (var receiving = i; receiving < i + NUM_SQUARES - 1; receiving++) {
+					if (fibCheck(receiving, receiving + 1) && SQUARES[receiving] != 0) {
+						SQUARES[receiving] += SQUARES[receiving + 1];
+						SQUARES[receiving + 1] = 0;
+						console.log(SQUARES);
+						//If squares combine, you need to move the rest of the squares into the empty space
+						moveCollide(direction);
+						break;
+					}
+				}
+			}
+
+		break;
+
+		// up key pressed
+		case 38:
+			// Go through each row
+			// Move squares up 1 row if possible then go to next row
+			for (var i = 0; i < SQUARES.length; i += NUM_SQUARES) {
+				for (var offset = 0; offset < NUM_SQUARES; offset++) {
+					
+					//Need count incase all values in column are zero
+					var count = 0;
+					while (SQUARES[i + offset] == 0 && count < NUM_SQUARES - (i / NUM_SQUARES) - 1) {
+
+						// move < NUM_SQUARES * (NUM_SQUARES - 1) prevents move from being in the last row
+						for (var move = offset + i; move < NUM_SQUARES * (NUM_SQUARES - 1); move += NUM_SQUARES) {
+							// Set square above to square below
+							SQUARES[move] = SQUARES[move + NUM_SQUARES];
+						}
+
+						//Sets last square in column to 0
+						SQUARES[(NUM_SQUARES) * (NUM_SQUARES - 1) + offset] = 0;
+						count++;
+					}
+				}
+			}
+
+			//Check for squares that can combine
+			//Has to be outside the above for loop because of the way the squares are moved
+			for (var i = 0; i < SQUARES.length; i += NUM_SQUARES) {
+				//Start at left then move right
+				for (var receiving = i; receiving < NUM_SQUARES * (NUM_SQUARES - 1); receiving++) {
+					if (fibCheck(receiving, receiving + NUM_SQUARES) && SQUARES[receiving] != 0) {
+						SQUARES[receiving] += SQUARES[receiving + NUM_SQUARES];
+						SQUARES[receiving + NUM_SQUARES] = 0;
+
+						//If squares combine, you need to move the rest of the squares into the empty space
+						moveCollide(direction);
+						break;
+					}
+				}
+			}
+		break;
+		
+		// right key pressed
+		case 39:
+			// Go through each row
+			for (var i = 0; i < SQUARES.length; i += NUM_SQUARES) {
+				for (var offset = NUM_SQUARES - 1; offset >= 0; offset--) {
+
+					//Need count incase all values in column are zero
+					var count = 0;
+
+					//Count decreases relative to offset because each column you move over
+					//The rightmost square needs to move one less
+					while (SQUARES[i + offset] == 0 && count < offset) {
+						for (var move = i + offset; move > i - 1; move--) {
+							SQUARES[move] = SQUARES[move - 1];
+						}
+
+						//Set last square to 0
+						SQUARES[i] = 0;
+						count++;
+					}
+				}
+
+				//Check for squares that can combine
+				//Start at right then move left
+				for (var receiving = i + NUM_SQUARES - 1; receiving > i; receiving--) {
+					if (fibCheck(receiving, receiving - 1) && SQUARES[receiving] != 0) {
+						SQUARES[receiving] += SQUARES[receiving - 1];
+						SQUARES[receiving - 1] = 0;
+
+						//If squares combine, you need to move the rest of the squares into the empty space
+						moveCollide(direction);
+						break;
+					}
+				}
+			}
+		break;
+
+		// down key pressed
+		case 40:
+			// Go through each row
+			for (var i = 0; i < SQUARES.length; i += NUM_SQUARES) {
+				for (var offset = 0; offset < NUM_SQUARES; offset++) {
+					
+					//Need count incase all values in column are zero
+					var count = 0;
+					while (SQUARES[SQUARES.length - NUM_SQUARES - i + offset] == 0 && count < NUM_SQUARES - (i / NUM_SQUARES) - 1) {
+
+						// move must be greater or equal to NUM_SQUARES since nothing will move into top row
+						for (var move = SQUARES.length - i - NUM_SQUARES + offset; move >= NUM_SQUARES; move -= NUM_SQUARES) {
+							// Set square above to square below
+							SQUARES[move] = SQUARES[move - NUM_SQUARES];
+						}
+
+						//Sets last square in column to 0
+						SQUARES[offset] = 0;
+						count++;
+					}
+				}
+			}
+
+			//Check for squares that can combine
+			//Has to be outside the above for loop because of the way the squares are moved
+			for (var i = SQUARES.length - NUM_SQUARES; i >= NUM_SQUARES; i -= NUM_SQUARES) {
+				//Start at left then move right
+				//Make sure receiving is not in top row
+				for (var receiving = i; receiving < i + NUM_SQUARES; receiving++) {
+					if (fibCheck(receiving, receiving - NUM_SQUARES) && SQUARES[receiving] != 0) {
+						SQUARES[receiving] += SQUARES[receiving - NUM_SQUARES];
+						SQUARES[receiving - NUM_SQUARES] = 0;
+						
+						//If squares combine, you need to move the rest of the squares into the empty space
+						moveCollide(direction);
+						break;
+					}
+				}
+			}
+		break;
+	}	
+}
+
 function checkLose() {
 	//Check for no empty squares
 	if (SQUARES.indexOf(0) < 0) {
@@ -343,108 +504,12 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
 
 document.addEventListener('keydown', function(event) {
 	var prevBoard = SQUARES.slice(0);
-    switch(event.keyCode) {
-		// left key pressed
-		case 37:
-			// Go through each row
-			for (var i = 0; i < SQUARES.length; i += NUM_SQUARES) {
-				for (var offset = 0; offset < NUM_SQUARES - 1; offset++) {
-
-					//Need count incase all values in column are zero
-					var count = 0;
-
-					//Count decreases relative to offset because each column you move over
-					//The rightmost square needs to move one less
-					while (SQUARES[i + offset] == 0 && count < NUM_SQUARES - offset - 1) {
-						for (var move = i + offset; move < i + NUM_SQUARES - 1; move++) {
-							SQUARES[move] = SQUARES[move + 1];
-						}
-
-						//Set last square to 0
-						SQUARES[i + NUM_SQUARES - 1] = 0;
-						count++;
-					}
-				}
-			}
-
-		break;
-
-		// up key pressed
-		case 38:
-			// Go through each row
-			for (var i = 0; i < SQUARES.length; i += NUM_SQUARES) {
-				for (var offset = 0; offset < NUM_SQUARES; offset++) {
-					
-					//Need count incase all values in column are zero
-					var count = 0;
-					while (SQUARES[i + offset] == 0 && count < NUM_SQUARES - (i / NUM_SQUARES) - 1) {
-
-						// move < NUM_SQUARES * (NUM_SQUARES - 1) prevents move from being in the last row
-						for (var move = offset + i; move < NUM_SQUARES * (NUM_SQUARES - 1); move += NUM_SQUARES) {
-							// Set square above to square below
-							SQUARES[move] = SQUARES[move + NUM_SQUARES];
-						}
-
-						//Sets last square in column to 0
-						SQUARES[(NUM_SQUARES) * (NUM_SQUARES - 1) + offset] = 0;
-						count++;
-					}
-				}
-			}
-		break;
-		
-		// right key pressed
-		case 39:
-			// Go through each row
-			for (var i = 0; i < SQUARES.length; i += NUM_SQUARES) {
-				for (var offset = NUM_SQUARES - 1; offset >= 0; offset--) {
-
-					//Need count incase all values in column are zero
-					var count = 0;
-
-					//Count decreases relative to offset because each column you move over
-					//The rightmost square needs to move one less
-					while (SQUARES[i + offset] == 0 && count < offset) {
-						for (var move = i + offset; move > i - 1; move--) {
-							SQUARES[move] = SQUARES[move - 1];
-						}
-
-						//Set last square to 0
-						SQUARES[i] = 0;
-						count++;
-					}
-				}
-			}
-		break;
-
-		// down key pressed
-		case 40:
-			// Go through each row
-			for (var i = 0; i < SQUARES.length; i += NUM_SQUARES) {
-				for (var offset = 0; offset < NUM_SQUARES; offset++) {
-					
-					//Need count incase all values in column are zero
-					var count = 0;
-					while (SQUARES[SQUARES.length - NUM_SQUARES + offset] == 0 && count < NUM_SQUARES - (i / NUM_SQUARES) - 1) {
-
-						// move < NUM_SQUARES * (NUM_SQUARES - 1) prevents move from being in the last row
-						for (var move = SQUARES.length - NUM_SQUARES + offset - i; move >= 0; move -= NUM_SQUARES) {
-							// Set square above to square below
-							SQUARES[move] = SQUARES[move - NUM_SQUARES];
-						}
-
-						//Sets last square in column to 0
-						SQUARES[offset] = 0;
-						count++;
-					}
-				}
-			}
-		break;
-	}	
+    
 
 	//Make sure it's an arrow key
 	if (event.keyCode > 36 && event.keyCode < 41) {
-		collide(event.keyCode);
+		moveCollide(event.keyCode);
+		//collide(event.keyCode);
 		
 		var isSame = true;
 		for (var i = 0; i < SQUARES.length && isSame; i++) {
