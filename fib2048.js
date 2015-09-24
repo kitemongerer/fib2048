@@ -6,6 +6,7 @@ var SIZE = 500;
 var NUM_SQUARES = 4;
 var SQUARE_SIZE = SIZE / NUM_SQUARES;
 var FIB = [1, 2];
+var COLORS = ["#DFFFDF", "#99FF99", "#33CC33", "#009933", "#66CCFF", "#3399FF", "#0066FF", "#0033CC", "#9999FF", "#9966FF", "#9933FF" , "#9900FF", "#CC3300", "#FF6600"];
 var myScore = 0
 var bestScore = 0
 
@@ -98,14 +99,20 @@ function drawSquares() {
 }
 
 function drawSquare(squareX, squareY, value) {
-	ctx.fillStyle = "#3399FF";
+	//Get fill color
+	if (COLORS.length > FIB.indexOf(value)) {
+		ctx.fillStyle = COLORS[FIB.indexOf(value)];	
+	} else {
+		ctx.fillStyle = COLORS[COLORS.length - 1];	
+	}
+	
 	ctx.fillRect(squareX, squareY, SQUARE_SIZE, SQUARE_SIZE);
 
 	ctx.font = "80px Arial";
 	ctx.fillStyle = "#4DB870";
 	ctx.textAlign="center";
 	ctx.textBaseline = 'middle';
-
+	
 	var iterCount = 1;
 	while (ctx.measureText(value).width > SQUARE_SIZE - 20) {
 		ctx.font = "" + (80 - 10 * iterCount++) + "px Arial";
@@ -127,7 +134,14 @@ function generateSquare() {
 }
 
 function animSquare(squareX, squareY, value, size) {
-	ctx.fillStyle = "#3399FF";
+	
+	//Get fill color
+	if (COLORS.length > FIB.indexOf(value)) {
+		ctx.fillStyle = COLORS[FIB.indexOf(value)];	
+	} else {
+		ctx.fillStyle = COLORS[COLORS.length - 1];	
+	}
+
 	ctx.fillRect(squareX, squareY, size, size);
 
 	ctx.font = "" + (80 * size / SQUARE_SIZE) + "px Arial";
