@@ -68,8 +68,16 @@ body{
 	height:80px;
 	border: none;
 	border-radius: 10px;
-	background-color: gray;
+	background-color: red;
 	font-size: 20px;
+	-webkit-animation-name: example; /* Chrome, Safari, Opera */
+    -webkit-animation-duration: 4s; /* Chrome, Safari, Opera */
+    animation-name: example;
+    animation-duration: 4s;
+}
+@keyframes example {
+    from {background-color: red;}
+    to {background-color: yellow;}
 }
 
 #currentScoreDisplay{
