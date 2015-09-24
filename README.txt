@@ -7,7 +7,7 @@ A good strategy to do well quickly is pick either left or right and other up or 
 
 For this implementation, we defined winning as getting a block with 144 in it. Otherwise, it would take to long.
 
-The CSS3 features we used were: border radius, gradient, and animations
+The CSS3 features we used were: border radius, gradient, and animation on the new game button when the page loads
 
 Why this project is worth 100 points.
 	This game took a fair amount of JavaScript logic to control the movement and combination of the blocks.
@@ -18,6 +18,7 @@ Why this project is worth 100 points.
 	Functions to detect winning and losing.
 	Manipulating innerHtml in javascript to record high scores outside of the canvas.
 	We have a copyright tag (cuz why not)!
+	Super sweet new game animation on page load!
 	The game is super fun to play!
 	Gorgeous background imagery.
 
