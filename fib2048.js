@@ -10,6 +10,25 @@ var COLORS = ["#DFFFDF", "#99FF99", "#33CC33", "#009933", "#66CCFF", "#3399FF", 
 var myScore = 0
 var bestScore = 0
 
+function getCurrentScore(){
+	myScore = 0;
+	for (var i = 0; i < SQUARES.length; i++) {
+		if (SQUARES[i] > myScore) {
+			myScore = SQUARES[i];
+		}
+	}
+	document.getElementById('currentScoreDisplay').innerHTML = myScore;
+}
+
+function getBestScore(){
+	for (var i = 0; i < SQUARES.length; i++) {
+		if (SQUARES[i] > bestScore) {
+			bestScore = SQUARES[i];
+		}
+	}
+	document.getElementById('bestScoreDisplay').innerHTML = bestScore;
+}
+
 //From html5 canvas tutorials
 window.requestAnimFrame = (function(callback) {
     return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
@@ -382,6 +401,8 @@ function moveCollide(direction) {
 			}
 		break;
 	}	
+	getCurrentScore();
+	getBestScore();
 }
 
 
