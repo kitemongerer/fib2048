@@ -8,16 +8,33 @@
 </head>
 
  <body>
-	<h1>2048:FIBONACCI<h1>
-	<button id="newGame" "type="button" onclick="resetGame()" >New Game</button>
-	<canvas id="canvas" width="500" height="500">
-	</canvas>
+	<h1>2048:FIBONACCI</h1>
+	
+	<canvas id="scoreDisplay1"></canvas>
+	
+	<h2 id="scoreH2">Score</h2>
+	
+	<div id="currentScoreDisplay" type="number">1</div>
 	<br>
 	
+	<canvas id="scoreDisplay2"></canvas>
 	
-
+	<h2 id="bestH2">Best</h2>
+	
+	<div id="bestScoreDisplay" type="number" >1</div>
+	<br>
+	
+	<button id="newGame" "type="button" onclick="resetGame()" >New Game</button>
+	
+	<canvas id="canvas" width="500" height="500"></canvas>
+	<br>
+	
+	<p id="copyright">&copy; 2015 CSCI445, Author: Max Eshleman, Zheng Li</p>
+	
 	<script>
+	
 	initialize(document.getElementById("canvas"));
+	
 	</script>
 
  </body>
