@@ -30,8 +30,9 @@ document.addEventListener('keydown', function(event) {
 				isSame = false;
 			}
 		}
+
+		drawBoard();
 		if (!isSame) {
-			drawBoard();
 			generateSquare();
 			checkWin();
 			checkLose();
@@ -56,6 +57,7 @@ function resetGame(){
 }
 	  
 function drawBoard() {
+	ctx.clearRect(0, 0, SIZE, SIZE);
 	ctx.lineWidth = 15;
 	ctx.fillStyle = "#8CA699";
 	ctx.roundRect(0, 0, SIZE, SIZE, 20).fill();
@@ -135,7 +137,7 @@ function generateSquare() {
 
 function animSquare(squareX, squareY, value, size) {
 	
-	//Get fill color
+	//Get fill color 
 	if (COLORS.length > FIB.indexOf(value)) {
 		ctx.fillStyle = COLORS[FIB.indexOf(value)];	
 	} else {
@@ -180,7 +182,6 @@ function animateSquareGen(squareX, squareY, startTime) {
 //Calculates the next number in the sequence and appends it to array
 function calculateFib() {
 	FIB[FIB.length] = FIB[FIB.length - 1] + FIB[FIB.length - 2];
-	console.log(FIB);
 }
 
 //Check if two numbers are adjacent in series
@@ -224,6 +225,7 @@ function checkWin() {
 
 // Moves squares and combines them based on the direction
 function moveCollide(direction) {
+
 	switch(direction) {
 		// left key pressed
 		case 37:
@@ -253,7 +255,7 @@ function moveCollide(direction) {
 					if (fibCheck(receiving, receiving + 1) && SQUARES[receiving] != 0) {
 						SQUARES[receiving] += SQUARES[receiving + 1];
 						SQUARES[receiving + 1] = 0;
-						console.log(SQUARES);
+						
 						//If squares combine, you need to move the rest of the squares into the empty space
 						moveCollide(direction);
 						break;
@@ -343,22 +345,20 @@ function moveCollide(direction) {
 
 		// down key pressed
 		case 40:
-			// Go through each row
-			for (var i = 0; i < SQUARES.length; i += NUM_SQUARES) {
+			// Go through each row except the last one since it can't move down anymore
+			for (var i = 0; i < SQUARES.length - NUM_SQUARES; i += NUM_SQUARES) {
 				for (var offset = 0; offset < NUM_SQUARES; offset++) {
 					
 					//Need count incase all values in column are zero
 					var count = 0;
-					while (SQUARES[SQUARES.length - NUM_SQUARES - i + offset] == 0 && count < NUM_SQUARES - (i / NUM_SQUARES) - 1) {
+					while (SQUARES[SQUARES.length - NUM_SQUARES - i + offset] == 0 && count < NUM_SQUARES - 1) {
 
 						// move must be greater or equal to NUM_SQUARES since nothing will move into top row
 						for (var move = SQUARES.length - i - NUM_SQUARES + offset; move >= NUM_SQUARES; move -= NUM_SQUARES) {
 							// Set square above to square below
 							SQUARES[move] = SQUARES[move - NUM_SQUARES];
+							SQUARES[move - NUM_SQUARES] = 0;
 						}
-
-						//Sets last square in column to 0
-						SQUARES[offset] = 0;
 						count++;
 					}
 				}
