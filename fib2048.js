@@ -73,6 +73,7 @@ function initialize(canvas) {
 function resetGame(){
 	initialize(document.getElementById("canvas"));
 	myScore = 0;
+	getCurrentScore();
 }
 	  
 function drawBoard() {
